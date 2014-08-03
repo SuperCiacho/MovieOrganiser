@@ -1,0 +1,100 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModel="clr-namespace:MovieOrganiser.ViewModel"
+        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" x:Class="MovieOrganiser.View.ViewMainWindow"
+        Title="Movie Organiser" Height="300" MinWidth="650" MinHeight="260"
+        AllowDrop="True"
+    >
+    <Window.DataContext>
+        <viewModel:ViewModelMainWindow/>
+    </Window.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="DragEnterCommand" >
+            <mvvm:EventToCommand Command="{Binding DragEnterCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="DragLeaveCommand" >
+            <mvvm:EventToCommand  Command="{Binding DragLeaveCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="DropCommand"  >
+            <mvvm:EventToCommand Command="{Binding DropCommand}" PassEventArgsToCommand="True"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded" >
+            <i:InvokeCommandAction Command="{Binding OnWindowLoaded}" CommandParameter="{Binding ElementName=Calendar}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid Background="#969696">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Background="#FFD0DFE0" d:IsLocked="True"/>
+
+        <Menu Grid.ColumnSpan="2" d:IsLocked="True">
+            <MenuItem Header="{StaticResource File}">
+                <MenuItem Header="{StaticResource Open}" Command="{Binding OpenCommand}"/>
+                <MenuItem Header="{StaticResource Quit}" Command="{Binding QuitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="{StaticResource Options}">
+                <MenuItem Header="{StaticResource SetContextMenu}" Command="{Binding SetContextCommand}"/>
+                <MenuItem Header="{StaticResource SetMovieLibPath}" Command="{Binding SetLibraryPathCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <toolkit:BusyIndicator Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" IsBusy="{Binding IsBusy}" BusyContent="{DynamicResource Waiting}">
+            <ListBox Background="{x:Null}" ItemsSource="{Binding MovieListView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+				VerticalAlignment="Top" Height="Auto"
+				IsSynchronizedWithCurrentItem="True" BorderThickness="0">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Background="#969696" Columns="{Binding ActualWidth, Converter={StaticResource ResourceKey=WidthToColumnNumber}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="Height" Value="100" />
+                        <Setter Property="BorderBrush" Value="LightGray" />
+                        <Setter Property="BorderThickness" Value="0,0,1,1" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <mvvm:EventToCommand Command="{Binding MovieSelectionCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListBox>
+        </toolkit:BusyIndicator>
+        <ContentPresenter Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Content="{Binding SelectedViewMovie}" Visibility="{Binding SelectedViewMovie, Converter={StaticResource ValueToVisibilityConverter}, ConverterParameter=NULL}"/>
+
+        <StackPanel  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
+            IsEnabled="{Binding IsBusy, Mode=TwoWay, Converter={StaticResource BooleanValueConverter}, ConverterParameter=Revert}">
+            <toolkit:WatermarkTextBox x:Name="SearchBox"  Height="Auto" MaxHeight="35" Margin="10,10,10,0" HorizontalAlignment="Stretch"
+				TextWrapping="Wrap" Text="{Binding SearchBoxText, Mode=OneWay}" Watermark="Title..."/>
+            <ComboBox Margin="10,10,10,0" ItemsSource="{Binding Source={StaticResource MovieType}}" SelectedIndex="{Binding SelectedType, Converter={StaticResource MovieTypeToIndex}}"/>
+            <toolkit:WatermarkTextBox x:Name="YearBox" Margin="10,10,10,0" MaxLength="4" Text="{Binding YearTextInput, Mode=TwoWay}" TextAlignment="Right" HorizontalContentAlignment="Right" Watermark="Year..." />
+
+            <Button Content="{DynamicResource Search}" Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=SearchBox}" Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Top" Width="74" Margin="23,10,21,0"/>
+        </StackPanel>
+
+        
+        
+        <DockPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Height="200" Width="200" Visibility="{Binding IsDropZoneVisible, Mode=OneWay, Converter={StaticResource ValueToVisibilityConverter}}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center">
+            <DockPanel.Background>
+                <ImageBrush  ImageSource="../Assets/dropzone.png" Stretch="Uniform"/>
+            </DockPanel.Background>
+        </DockPanel>
+    </Grid>
+</Window>

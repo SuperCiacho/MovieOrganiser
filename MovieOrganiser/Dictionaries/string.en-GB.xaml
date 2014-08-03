@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    x:Name="EnglishDictionary"
+                    >
+    <system:String x:Key="Search">Search</system:String>
+    <system:String x:Key="Waiting">Please wait...</system:String>
+    <system:String x:Key="Accept">Apply</system:String>
+    <system:String x:Key="File">File</system:String>
+    <system:String x:Key="Open">Open</system:String>
+    <system:String x:Key="Quit">Quit</system:String>
+    <system:String x:Key="Options">Options</system:String>
+    <system:String x:Key="CatalogFile">Catalog movie</system:String>
+    <system:String x:Key="SetMovieLibPath">Set Movie Library path</system:String>
+    <system:String x:Key="SetContextMenu">Set Context Menu</system:String>
+    <system:String x:Key="TranslationTechnique">Translation technique</system:String>
+    <system:String x:Key="Description">Description</system:String>
+
+    <x:ArrayExtension Type="system:String" x:Key="Translations">
+        <system:String>Subtitles</system:String>
+        <system:String>Voice-over</system:String>
+        <system:String>Dubbing</system:String>
+        <system:String>PL</system:String>
+        <system:String>Missing subtitles</system:String>
+    </x:ArrayExtension>
+    
+    <x:ArrayExtension x:Key="MovieType" Type="system:String">
+        <system:String>All</system:String>
+        <system:String>Movies</system:String>
+        <system:String>Series</system:String>
+    </x:ArrayExtension>
+</ResourceDictionary>
