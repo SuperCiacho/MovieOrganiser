@@ -1,4 +1,9 @@
-<Application x:Class="MovieOrganiser.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converters="clr-namespace:MovieOrganiser.Converters" StartupUri="View/ViewMainWindow.xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" ShutdownMode="OnMainWindowClose">
+<Application x:Class="MovieOrganiser.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converters="clr-namespace:MovieOrganiser.Converters" 
+             StartupUri="View/ViewMainWindow.xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -15,6 +20,7 @@
             <converters:BooleanValueConverter x:Key="BooleanValueConverter" />
             <converters:MovieTypeToIndex x:Key="MovieTypeToIndex" />
             <converters:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
+            <converters:TranslationTechinqueConverter x:Key="TranslationTechinqueConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -4,6 +4,7 @@
                     >
 
     <system:String x:Key="Search">Szukaj</system:String>
+    <system:String x:Key="Cancel">Anuluj</system:String>
     <system:String x:Key="Waiting">Proszę czekać...</system:String>
     <system:String x:Key="Accept">Zatwierdź</system:String>
     <system:String x:Key="File">Plik</system:String>
@@ -15,6 +16,8 @@
     <system:String x:Key="SetContextMenu">Dodaj menu kontekstowe</system:String>
     <system:String x:Key="TranslationTechnique">Rodzaj tłumaczenia</system:String>
     <system:String x:Key="Description">Opis</system:String>
+    <system:String x:Key="TitleWaterMark">Tytuł</system:String>
+    <system:String x:Key="YearWaterMark">Rok produkcji</system:String>
     
     <x:ArrayExtension Type="system:String" x:Key="Translations">
         <system:String>Napisy</system:String>

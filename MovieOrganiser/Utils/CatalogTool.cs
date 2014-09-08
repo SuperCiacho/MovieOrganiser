@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Linq;
+using System.Windows.Input;
 using MovieOrganiser.Model;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,6 @@ namespace MovieOrganiser.Utils
         {
             var movieInfo = new MovieInfo()
             {
-                Type = MovieType.Both,
                 FilePath = file
             };
 
@@ -110,15 +110,23 @@ namespace MovieOrganiser.Utils
 
         public void CatalogMovie(Movie movie, MovieInfo movieInfo)
         {
+            Mouse.OverrideCursor = Cursors.Wait;
+
             var file = new FileInfo(movieInfo.FilePath);
-            var currentDir = file.Directory != null ? file.Directory.Parent : null;
-            if (currentDir == null || Regex.IsMatch(currentDir.ToString(), @"^\d{1}.\d{1} - \w"))
+            var isRoot = file.Directory != null && file.Directory.Parent == null;
+            if (!Regex.IsMatch(file.DirectoryName, @"^\d{2}.\d{1} - \w"))
             {
                 var subsAvailable = false;
                 try
                 {
                     var sb = new StringBuilder();
-                    sb.AppendFormat("{0} - {1} [{2}][{3}][{4}]", movie.Rate.ToString("##.#").Replace(',', '.'), movie.Title, movie.Genre, movie.Year, movieInfo.TranslationTechinque.GetValue());
+                    sb.AppendFormat("{0} - {1} ({2})[{3}][{4}][{5}]", 
+                        movie.Rate.ToString("##.#").Replace(',', '.'),
+                        movie.PolishTitle, 
+                        movie.Title,
+                        movie.Genre, 
+                        movie.Year, 
+                        movieInfo.TranslationTechinque.Value.GetValue());
                     if (movieInfo.HD != null) sb.Append(string.Format("[{0}]", movieInfo.HD));
 
                     invalidChars.ForEach(c => sb.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
@@ -130,11 +138,12 @@ namespace MovieOrganiser.Utils
                     {
                         try
                         {
-                           new DirectoryInfo(Properties.Settings.Default.Location).CreateSubdirectory(newDirName);
-                           file.MoveTo(Path.Combine(newPath, file.Name));
-                           File.WriteAllText(Path.Combine(newPath, "Description.txt"), movie.Description);
-                           
-                            #region Napisy
+                            new DirectoryInfo(Properties.Settings.Default.Location).CreateSubdirectory(newDirName);
+                            file.MoveTo(Path.Combine(newPath, file.Name));
+                            File.WriteAllText(Path.Combine(newPath, "Description.txt"), movie.Description);
+
+                            #region Subtitles
+
                             if (movieInfo.TranslationTechinque == TranslationTechnique.Subtitles)
                                 foreach (var subs in Subtitles.Select(s => Path.ChangeExtension(file.ToString(), s)).Where(File.Exists))
                                 {
@@ -148,11 +157,14 @@ namespace MovieOrganiser.Utils
 
                             #endregion
 
-                            //var result = Toolkit.MessageBox.Show("Czy chcesz usunąć poprzedni folder, w któtrym znajdował się film?", "Usuwanie poprzedniego folderu", MessageBoxButton.YesNo);
-                            //if (result == System.Windows.MessageBoxResult.Yes)
-                            //{
-                            //    DeleteParentDirectory();
-                            //}
+                            if (!isRoot)
+                            {
+                                var result = Toolkit.MessageBox.Show("Czy chcesz usunąć poprzedni folder, w któtrym znajdował się film?", "Usuwanie poprzedniego folderu", MessageBoxButton.YesNo);
+                                if (result == System.Windows.MessageBoxResult.Yes)
+                                {
+                                    DeletingParentFolder(file.DirectoryName);
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -163,11 +175,33 @@ namespace MovieOrganiser.Utils
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message + "\n", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Toolkit.MessageBox.Show(exception.Message + "\n", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
-                MessageBox.Show("Film już został skatalogowany", "Błąd!", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                Toolkit.MessageBox.Show("Film już został skatalogowany", "Błąd", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+
+            Mouse.OverrideCursor = null;
+        }
+
+        private void DeletingParentFolder(string path)
+        {
+            var numberOfFiles = Directory.EnumerateFiles(path).Count();
+            var numberOfDirs = Directory.EnumerateDirectories(path).Count();
+            var isAnyFiles = numberOfFiles > 0;
+            var isAnyDirs = numberOfFiles > 0;
+
+            if (isAnyFiles || isAnyDirs)
+            {
+                var info = string.Format("Folder zawiera {0}{1}{2}. \nPotwierdź jego usunięcie.",
+                    isAnyFiles ? numberOfFiles + " plików" : string.Empty,
+                    isAnyFiles && isAnyDirs ? " i " : string.Empty,
+                    isAnyDirs ? numberOfDirs + " folderów" : string.Empty
+                    );
+                var retValue = Toolkit.MessageBox.Show(info, "Informacja.", MessageBoxButton.OKCancel, MessageBoxImage.Asterisk);
+                if (retValue == MessageBoxResult.Cancel) return;
+            }
+            Directory.Delete(path);
         }
     }
 }

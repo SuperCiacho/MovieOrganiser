@@ -1,4 +1,5 @@
-﻿using MovieOrganiser.Model;
+﻿using System.Globalization;
+using MovieOrganiser.Model;
 using System;
 
 namespace MovieOrganiser.ViewModel
@@ -10,7 +11,7 @@ namespace MovieOrganiser.ViewModel
         public string Year { get; set; }
         public string Genre { get; set; }
         public Uri Img { get; set; }
-        public string Type { get; set; }
+        public char Type { get; set; }
 
         public Movie Movie { get; set; }
 
@@ -19,19 +20,12 @@ namespace MovieOrganiser.ViewModel
             this.Movie = movie;
             this.PolishTitle = movie.PolishTitle;
             this.OriginalTitle = movie.Title;
-            this.Year = movie.Year.ToString();
+            this.Year = movie.Year.ToString(CultureInfo.InvariantCulture);
             this.Genre = movie.Genre;
             this.Img = movie.CoverUrl ?? new Uri("../Assets/noImg.jpg", UriKind.Relative);
-            this.Type = movie is Series ? "S" : "M";
+            this.Type = movie is Series ? 'S' : 'F';
         }
 
-        // todo Usunąć
-        public ViewModelMovie()
-        {
-            this.OriginalTitle = this.Genre = this.PolishTitle = "Test";
-            this.Year = DateTime.Now.Year.ToString();
-            this.Img = new Uri("../Assets/noImg.jpg", UriKind.Relative);
-            this.Type = "M";
-        }
+        protected ViewModelMovie() { }
     }
 }

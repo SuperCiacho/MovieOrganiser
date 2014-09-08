@@ -101,7 +101,7 @@ namespace MovieOrganiser.Utils
         {
             if (this.MethodName == null || this.Signature == null) return null;
 
-            StringBuilder query = new StringBuilder(API_SERVER);
+            var query = new StringBuilder(API_SERVER);
             try
             {
                 //var encoder = System.Text.Encoding.UTF8;
@@ -116,7 +116,7 @@ namespace MovieOrganiser.Utils
             }
             catch (Exception ex)
             {
-                //LOGGER.error(ex.getMessage());
+                Logger.Error(ex.Message);
                 return null;
             }
             return new Uri(query.ToString());
@@ -124,66 +124,64 @@ namespace MovieOrganiser.Utils
 
         public object PrepareResponse()
         {
-            String response = GetResponse();
+            var response = GetResponse();
             if (response == null) return null;
 
             var ra = new ResponseAnalyzer(response);
             object res = null;
-            var list = new List<object>();
 
             switch (MethodName)
             {
-
                 case "getFilmDescription":
                     res = ra.Analyze("Description");
                     break;
 
                 case "getFilmPersons":
-                    list = (List<object>)ra.Analyze(string.Empty);
-                    List<Person> personList = new List<Person>();
+                    var list = (List<object>)ra.Analyze(string.Empty);
+                    var personList = new List<Person>();
                     foreach (IEnumerable<object> data in list)
                     {
                         var personData = data.ToList();
-                        Person person = new Person();
+                        var person = new Person();
                         try
                         {
                             person.Id = int.Parse(personData[0].ToString());
                         }
-                        catch (NullReferenceException e)
+                        catch (NullReferenceException)
                         {
-                            //LOGGER.error("Brak ID osoby", e);
+                            Logger.Error("Brak ID osoby.");
                         }
                         try
                         {
                             person.Role = personData[1].ToString();
                         }
-                        catch (NullReferenceException e)
+                        catch (NullReferenceException)
                         {
-                            //LOGGER.debug("Brak roli", e);
+                            Logger.Debug("Brak roli");
                         }
 
                         try
                         {
                             person.Info = personData[2].ToString();
                         }
-                        catch (NullReferenceException e)
+                        catch (NullReferenceException)
                         {
-                            //LOGGER.debug("Brak informacji dodatkowych", e);
+                            Logger.Debug("Brak informacji dodatkowych");
                         }
 
                         person.Name = personData[3].ToString();
                         Uri photoUrl = null;
                         try
                         {
-                            photoUrl = new Uri(URL_PERSON + personData[4].ToString());
+                            photoUrl = new Uri(URL_PERSON + personData[4]);
                         }
-                        catch (UriFormatException e)
+                        catch (UriFormatException)
                         {
-                            //LOGGER.error("Niepoprawny adres zdjęcia osoby", e);
+                            Logger.Error("Niepoprawny adres zdjęcia osoby.");
                         }
-                        catch (NullReferenceException e)
+                        catch (NullReferenceException )
                         {
-                            //LOGGER.debug("Osoba nie posiada zdjęcia", e);
+                            Logger.Debug("Osoba nie posiada zdjęcia.");
                         }
                         person.PhotoUrl = photoUrl;
                         personList.Add(person);
@@ -193,7 +191,7 @@ namespace MovieOrganiser.Utils
                     break;
 
                 case "getFilmInfoFull":
-                    res = (List<object>)ra.Analyze(string.Empty);
+                    res = ra.Analyze(string.Empty);
                     break;
             }
             return res;
@@ -202,17 +200,17 @@ namespace MovieOrganiser.Utils
 
         private string GetResponse()
         {
-            StringBuilder responseBuffer;
+            string output;
 
             if (Signature == null) return null;
 
             try
             {
-                Uri url = GetRequestParameters();
+                var url = GetRequestParameters();
                 var request = WebRequest.Create(url);
                 var response = request.GetResponse();
 
-                Stream dataStream = response.GetResponseStream();
+                var dataStream = response.GetResponseStream();
 
                 using (TextReader connectionReader = new StreamReader(new BufferedStream(dataStream), Encoding.UTF8))
                 {
@@ -221,24 +219,27 @@ namespace MovieOrganiser.Utils
                      * "ok" - pozostałe linie są wynikiem
                      * "err" - pozostała linia zawiera opis błędu
                      */
-                    string stateStr = connectionReader.ReadLine();
-                    bool state = stateStr == "ok";
+                    var stateStr = connectionReader.ReadLine();
+                    var state = stateStr == "ok";
 
-                    responseBuffer = new StringBuilder();
+                    var responseBuffer = new StringBuilder();
 
                     string line;
                     while ((line = connectionReader.ReadLine()) != null) responseBuffer.Append(line);
 
                     connectionReader.Close();
 
+                    output = responseBuffer.ToString();
+
                     if (!state)
                     {
-                        //LOGGER.error(resp);
+                        Logger.Error(output);
                         return null;
                     }
-                    else if (responseBuffer.ToString() == "exc NullPointerException")
+
+                    if (output == "exc NullPointerException")
                     {
-                        //LOGGER.error("Brak danych");
+                        Logger.Error("Brak danych");
                         return null;
                     }
                 }
@@ -246,16 +247,17 @@ namespace MovieOrganiser.Utils
 
             catch (UriFormatException e)
             {
-                //LOGGER.error(e.getMessage(), e);
+                Logger.Exception(e);
                 return null;
             }
             catch (IOException e)
             {
-                //LOGGER.error(e.getMessage(), e);
+                Logger.Exception(e);
                 return null;
             }
-            //LOGGER.debug(resp);
-            return responseBuffer.ToString();
+
+            Logger.Debug(output);
+            return output;
         }
 
         #endregion
@@ -269,18 +271,16 @@ namespace MovieOrganiser.Utils
             .Append(QueryType)
             .Append("?q=");
 
-            string title;
             try
             {
-                title = System.Web.HttpUtility.UrlEncode(((String)parameters["title"]));
+                string title = System.Web.HttpUtility.UrlEncode(((String)parameters["title"]));
                 urlStr.Append(title);
             }
-            catch (Exception e)
+            catch (Exception )
             {
-                //LOGGER.error("Błąd związany z kodowaniem URL", e);
+                Logger.Error("Błąd związany z kodowaniem URL.");
                 return false;
             }
-
 
             var year = parameters.FirstOrDefault(x => x.Key == "year").Value;
             if (year != null)
@@ -293,11 +293,11 @@ namespace MovieOrganiser.Utils
             try
             {
                 this.Url = new Uri(urlStr.ToString());
-                //LOGGER.debug(urlStr.toString());
+                Logger.Debug(urlStr.ToString());
             }
-            catch (UriFormatException e)
+            catch (UriFormatException)
             {
-                //LOGGER.error("Problem z ustanowieniem adresu URL", e);
+                Logger.Error("Problem z ustanowieniem adresu URL");
                 return false;
             }
             return true;
@@ -327,45 +327,44 @@ namespace MovieOrganiser.Utils
             catch (UriFormatException e)
             {
                 desc += "Nieprawidłowy adres URL.";
-                //LOGGER.error(desc, e);
+                Logger.Exception(e, desc);
             }
             catch (IOException e)
             {
                 desc += "Błąd odczytu danych filmu.";
-                //LOGGER.error(desc, e);
+                Logger.Exception(e, desc);
             }
 
             return html.ToString();
         }
 
-        public IEnumerable<object> GetItemsList(params object[] parameters)
+        public IEnumerable<Movie> GetItemsList(params object[] parameters)
         {
             if (parameters.Length < 3 || parameters.Length > 4) return null;
             this.QueryType = (string)parameters[1];
             this.OnlyId = (bool)parameters[2];
-            var urlParams = new Dictionary<string, object> {{"title", parameters[0]}};
+            var urlParams = new Dictionary<string, object> { { "title", parameters[0] } };
             if (parameters.Length == 4) urlParams.Add("year", parameters[3]);
-            return SetUrlStr(urlParams) ? this.GetMovieList() : new List<object>();
+            return SetUrlStr(urlParams) ? this.GetMovieList() : new List<Movie>();
         }
 
-        private IEnumerable<object> GetMovieList()
+        private IEnumerable<Movie> GetMovieList()
         {
             var html = GetHtmlCode(Url, "Lista filmów");
             var isMovieQuery = this.QueryType == "film";
 
-            Regex exp = isMovieQuery ? RE_FILM_DATA : RE_SERIES_DATA;
+            var exp = isMovieQuery ? RE_FILM_DATA : RE_SERIES_DATA;
 
             var matcher = exp.Matches(html);
             var allMatches = (from Match match in matcher select match.Groups[1].Value).ToList();
 
             if (allMatches.Count == 0)
             {
-                string gettingObj = string.Format("Nie znaleziono pasujących do zapytania adresów URL {0}.\nZapytanie: {1}\n", this.QueryType == "film" ? "filmów" : "seriali", this.Url);
-                //LOGGER.info(gettingObj);
+                Logger.Information(string.Format("Nie znaleziono pasujących do zapytania adresów URL {0}.\nZapytanie: {1}\n", this.QueryType == "film" ? "filmów" : "seriali", this.Url));
             }
 
             IEnumerable<Movie> filmList;
-            if(isMovieQuery)
+            if (isMovieQuery)
                 filmList = new List<Movie>();
             else
                 filmList = new List<Series>();
@@ -379,19 +378,14 @@ namespace MovieOrganiser.Utils
                 }
                 catch (UriFormatException e)
                 {
-                    //LOGGER.error("Błąd tworzenia URL", e);
+                    Logger.Exception(e, "Błąd tworzenia URL.");
                 }
 
-                Movie film = isMovieQuery ? new Movie(FilmWebApi) : new Series(FilmWebApi);
+                var film = isMovieQuery ? new Movie(FilmWebApi) : new Series(FilmWebApi);
                 film.FilmUrl = filmUrl;
                 this.GetMovieId(ref film);
                 if (isMovieQuery) (filmList as List<Movie>).Add(film);
                 else (filmList as List<Series>).Add((Series)film);
-            }
-
-            if (this.OnlyId)
-            {
-                return filmList.Select(film => film.Id).Cast<object>().ToList();
             }
 
             return filmList;
@@ -406,18 +400,24 @@ namespace MovieOrganiser.Utils
         {
             var html = GetHtmlCode(film.FilmUrl, "Film");
             var matcher = RE_FILM_ID.Matches(html);
+
+            if (matcher.Count == 0)
+            {
+                Logger.Error("Nie znaleziono ID filmu.");
+                return;
+            }
+
             foreach (Match m in matcher)
             {
                 try
                 {
                     film.Id = int.Parse(m.Groups[1].Value);
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    //LOGGER.error("Nieprawidłowy format ID - nie zapisano", e);
+                    Logger.Error("Nieprawidłowy format ID - nie zapisano");
                 }
             }
-            //else LOGGER.error("Nie znaleziono ID filmu.");
         }
 
         #endregion
@@ -435,57 +435,57 @@ namespace MovieOrganiser.Utils
 
                 try
                 {
-                    movie.Title = res[(int)MovieInfoLevel.OriginalTitle].ToString();
+                    movie.Title = (string)res[(int)MovieInfoLevel.OriginalTitle];
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Tytuł polski jest identyczny z oryginalnym. Przechowywany jako polski.");
-                }
-
-                try
-                {
-                    movie.PolishTitle = res[(int)MovieInfoLevel.PolishTitle].ToString();
-                }
-                catch (NullReferenceException e)
-                {
-                    //LOGGER.error("Brak polskiego tytułu", e);
+                    Logger.Debug("Tytuł polski jest identyczny z oryginalnym. Przechowywany jako polski.");
                 }
 
                 try
                 {
-                    movie.Rate = float.Parse(res[(int)MovieInfoLevel.Rate].ToString());
+                    movie.PolishTitle = (string)res[(int)MovieInfoLevel.PolishTitle];
                 }
-                catch (FormatException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.error("Nieprawidłowy format oceny filmu.", e);
+                    Logger.Error("Brak polskiego tytułu.");
                 }
-                catch (NullReferenceException e)
+
+                try
                 {
-                    //LOGGER.debug("Brak oceny filmu.", e);
+                    movie.Rate = (double)res[(int) MovieInfoLevel.Rate];
+                }
+                catch (FormatException)
+                {
+                    Logger.Error("Nieprawidłowy format oceny filmu.");
+                }
+                catch (NullReferenceException)
+                {
+                    Logger.Debug("Brak oceny filmu.");
                 }
 
                 //liczba głosów
                 try
                 {
-                    movie.Votes = Convert.ToInt32(res[(int)MovieInfoLevel.Votes]);
+                    movie.Votes = (long)res[(int) MovieInfoLevel.Votes];
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    //LOGGER.error("Nieprawidłowy format liczby głosów filmu.", e);
+                    Logger.Error("Nieprawidłowy format liczby głosów filmu.");
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Brak głosów na film.", e);
+                    Logger.Debug("Brak głosów na film.");
                 }
 
                 //gatunek
                 try
                 {
-                    movie.Genre = res[(int)MovieInfoLevel.Genre].ToString().Replace(",", ", "); ;
+                    movie.Genre = ((string)res[(int)MovieInfoLevel.Genre]).Replace(",", ", ");
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Brak informacji na temat gatunku.", e);
+                    Logger.Debug("Brak informacji na temat gatunku.");
                 }
 
                 //rok produkcji
@@ -493,13 +493,13 @@ namespace MovieOrganiser.Utils
                 {
                     movie.Year = Convert.ToInt32(res[(int)MovieInfoLevel.Year]);
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    //LOGGER.error("Nieprawidłowy format roku produkcji.", e);
+                    Logger.Error("Nieprawidłowy format roku produkcji.");
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Brak informacji o dacie produkcji.", e);
+                    Logger.Debug("Brak informacji o dacie produkcji.");
                 }
 
                 //czas trwania
@@ -507,13 +507,13 @@ namespace MovieOrganiser.Utils
                 {
                     movie.Duration = Convert.ToInt32(res[(int)MovieInfoLevel.Duration]);
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    //LOGGER.error("Nieprawidłowy format czasu trwania filmu.", e);
+                    Logger.Error("Nieprawidłowy format czasu trwania filmu.");
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Brak informacji o czasie trwania filmu.", e);
+                    Logger.Debug("Brak informacji o czasie trwania filmu.");
                 }
 
                 //okładka
@@ -526,23 +526,23 @@ namespace MovieOrganiser.Utils
                         movie.CoverUrl = new Uri(ApiHelper.URL_POSTER + data);
                     }
                 }
-                catch (UriFormatException e)
+                catch (UriFormatException)
                 {
-                    //LOGGER.error("Błąd URL dla okładki filmu.", e);
+                    Logger.Error("Błąd URL dla okładki filmu.");
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Brak URL okładki filmu.", e);
+                    Logger.Debug("Brak URL okładki filmu.");
                 }
 
                 //kraj produkcji
                 try
                 {
-                    movie.Countries = res[(int)MovieInfoLevel.Country].ToString(); ;
+                    movie.Countries = (string)res[(int)MovieInfoLevel.Country];
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.debug("Brak informacji o kraju produkcji.", e);
+                    Logger.Debug("Brak informacji o kraju produkcji.");
                 }
 
                 //zarys fabuły
@@ -550,28 +550,28 @@ namespace MovieOrganiser.Utils
                 {
                     movie.Plot = (string)res[(int)MovieInfoLevel.Plot];
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    ////LOGGER.debug("Brak zarysu fabuły.", e);
+                    Logger.Debug("Brak zarysu fabuły.");
                 }
 
                 //serial posiada kilka dodatkowych pól
                 if (movie is Series)
                 {
-                    Series series = (Series)movie;
+                    var series = (Series)movie;
 
                     //liczba sezonów
                     try
                     {
                         series.SeasonsCount = Convert.ToInt32(res[(int)MovieInfoLevel.NumberOfSeasons]);
                     }
-                    catch (FormatException e)
+                    catch (FormatException)
                     {
-                        ////LOGGER.error("Nieprawidłowy format liczby sezonów.", e);
+                        Logger.Error("Nieprawidłowy format liczby sezonów.");
                     }
-                    catch (NullReferenceException e)
+                    catch (NullReferenceException)
                     {
-                        ////LOGGER.debug("Brak informacji o liczbie sezonów.", e);
+                        Logger.Debug("Brak informacji o liczbie sezonów.");
                     }
 
                     //liczba odcinków
@@ -579,13 +579,13 @@ namespace MovieOrganiser.Utils
                     {
                         series.EpisodesCount = Convert.ToInt32(res[(int)MovieInfoLevel.NumberOfEpisodes]);
                     }
-                    catch (FormatException e)
+                    catch (FormatException)
                     {
-                        ////LOGGER.error("Nieprawidłowy format liczby odcinków.", e);
+                        Logger.Error("Nieprawidłowy format liczby odcinków.");
                     }
-                    catch (NullReferenceException e)
+                    catch (NullReferenceException)
                     {
-                        ////LOGGER.debug("Brak informacji o liczbie odcinków.", e);
+                        Logger.Debug("Brak informacji o liczbie odcinków.");
                     }
                 }
             }
@@ -609,22 +609,18 @@ namespace MovieOrganiser.Utils
                 do
                 {
                     this.MethodName = "getFilmPersons [" + filmId + "," + (int)profession + "," + 50 * pageNo + "," + 50 * (1 + pageNo) + "]";
-                    if (this.MethodName != null)
-                    {
-                        partPersonList = (List<Person>)this.PrepareResponse();
-                        if (partPersonList.Count > 0)
-                        {
-                            personList.AddRange(partPersonList);
-                        }
-                        pageNo++;
-                    }
+                    if (this.MethodName == null) continue;
+
+                    partPersonList = (List<Person>)this.PrepareResponse();
+                    if (partPersonList.Count > 0) personList.AddRange(partPersonList);
+                    pageNo++;
                 }
                 while (partPersonList.Count == 50); //TODO: Nie jestem pewny poprawności tego warunku
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 string error = "Brak ludzi o profesji " + profession + " związanych z filmem.";
-                //LOGGER.debug(error);
+                Logger.Debug(error);
             }
             return personList;
         }
@@ -645,9 +641,9 @@ namespace MovieOrganiser.Utils
                 {
                     desc = PrepareResponse().ToString();
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
-                    //LOGGER.error("Brak danych opisu filmu", e);
+                    Logger.Error("Brak danych opisu filmu.");
                 }
             }
             return desc;

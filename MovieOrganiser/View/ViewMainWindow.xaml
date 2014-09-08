@@ -3,29 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModel="clr-namespace:MovieOrganiser.ViewModel"
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d" x:Class="MovieOrganiser.View.ViewMainWindow"
         Title="Movie Organiser" Height="300" MinWidth="650" MinHeight="260"
-        AllowDrop="True"
-    >
+        AllowDrop="True">
     <Window.DataContext>
         <viewModel:ViewModelMainWindow/>
     </Window.DataContext>
     <i:Interaction.Triggers>
-        <i:EventTrigger EventName="DragEnterCommand" >
+        <i:EventTrigger EventName="DragEnter" >
             <mvvm:EventToCommand Command="{Binding DragEnterCommand}" PassEventArgsToCommand="True" />
         </i:EventTrigger>
-        <i:EventTrigger EventName="DragLeaveCommand" >
+        <i:EventTrigger EventName="DragLeave" >
             <mvvm:EventToCommand  Command="{Binding DragLeaveCommand}" PassEventArgsToCommand="True" />
         </i:EventTrigger>
-        <i:EventTrigger EventName="DropCommand"  >
+        <i:EventTrigger EventName="Drop"  >
             <mvvm:EventToCommand Command="{Binding DropCommand}" PassEventArgsToCommand="True"/>
-        </i:EventTrigger>
-        <i:EventTrigger EventName="Loaded" >
-            <i:InvokeCommandAction Command="{Binding OnWindowLoaded}" CommandParameter="{Binding ElementName=Calendar}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid Background="#969696">
@@ -34,25 +30,25 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Background="#FFD0DFE0" d:IsLocked="True"/>
 
-        <Menu Grid.ColumnSpan="2" d:IsLocked="True">
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" d:IsLocked="True">
             <MenuItem Header="{StaticResource File}">
                 <MenuItem Header="{StaticResource Open}" Command="{Binding OpenCommand}"/>
                 <MenuItem Header="{StaticResource Quit}" Command="{Binding QuitCommand}"/>
             </MenuItem>
             <MenuItem Header="{StaticResource Options}">
-                <MenuItem Header="{StaticResource SetContextMenu}" Command="{Binding SetContextCommand}"/>
+                <MenuItem Header="{StaticResource SetContextMenu}" Command="{Binding SetContextMenuCommand}"/>
                 <MenuItem Header="{StaticResource SetMovieLibPath}" Command="{Binding SetLibraryPathCommand}"/>
             </MenuItem>
         </Menu>
 
         <toolkit:BusyIndicator Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" IsBusy="{Binding IsBusy}" BusyContent="{DynamicResource Waiting}">
-            <ListBox Background="{x:Null}" ItemsSource="{Binding MovieListView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+            <ListBox x:Name="MovieListBox"  Background="{x:Null}" ItemsSource="{Binding MovieListView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
 				VerticalAlignment="Top" Height="Auto"
 				IsSynchronizedWithCurrentItem="True" BorderThickness="0">
                 <ListBox.ItemsPanel>
@@ -71,7 +67,7 @@
                 </ListBox.ItemContainerStyle>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseDoubleClick">
-                        <mvvm:EventToCommand Command="{Binding MovieSelectionCommand}" PassEventArgsToCommand="True"/>
+                        <mvvm:EventToCommand Command="{Binding MovieSelectionCommand}" CommandParameter="{Binding SelectedIndex, ElementName=MovieListBox}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListBox>
@@ -80,17 +76,18 @@
 
         <StackPanel  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
             IsEnabled="{Binding IsBusy, Mode=TwoWay, Converter={StaticResource BooleanValueConverter}, ConverterParameter=Revert}">
-            <toolkit:WatermarkTextBox x:Name="SearchBox"  Height="Auto" MaxHeight="35" Margin="10,10,10,0" HorizontalAlignment="Stretch"
-				TextWrapping="Wrap" Text="{Binding SearchBoxText, Mode=OneWay}" Watermark="Title..."/>
+            <toolkit:WatermarkTextBox x:Name="SearchBox" Height="Auto" MaxHeight="35" Margin="10,10,10,0" HorizontalAlignment="Stretch"
+				TextWrapping="Wrap" Text="{Binding SearchBoxText, Mode=OneWay}" TextAlignment="Left" HorizontalContentAlignment="Center"  Watermark="{StaticResource TitleWaterMark}"/>
             <ComboBox Margin="10,10,10,0" ItemsSource="{Binding Source={StaticResource MovieType}}" SelectedIndex="{Binding SelectedType, Converter={StaticResource MovieTypeToIndex}}"/>
-            <toolkit:WatermarkTextBox x:Name="YearBox" Margin="10,10,10,0" MaxLength="4" Text="{Binding YearTextInput, Mode=TwoWay}" TextAlignment="Right" HorizontalContentAlignment="Right" Watermark="Year..." />
-
-            <Button Content="{DynamicResource Search}" Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=SearchBox}" Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Top" Width="74" Margin="23,10,21,0"/>
+            <toolkit:WatermarkTextBox x:Name="YearBox" Margin="10,10,10,0" MaxLength="4" Text="{Binding YearTextInput, Mode=TwoWay}" TextAlignment="Right" HorizontalContentAlignment="Center" Watermark="{StaticResource YearWaterMark}" />
+            <Button  Margin="0,10" Content="{StaticResource Search}" Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=SearchBox}" Width="74" />
         </StackPanel>
 
-        
-        
-        <DockPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Height="200" Width="200" Visibility="{Binding IsDropZoneVisible, Mode=OneWay, Converter={StaticResource ValueToVisibilityConverter}}"
+        <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                   Margin="6" MaxHeight="32" LineHeight="15"
+                   Text="{Binding CurrentFileName}" 
+                   />
+        <DockPanel x:Name="DockPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Height="200" Width="200" Visibility="{Binding IsDropZoneVisible, Mode=OneWay, Converter={StaticResource ValueToVisibilityConverter}}"
                    HorizontalAlignment="Center" VerticalAlignment="Center">
             <DockPanel.Background>
                 <ImageBrush  ImageSource="../Assets/dropzone.png" Stretch="Uniform"/>

@@ -27,8 +27,8 @@ namespace MovieOrganiser.Model
         private int year;
         private Uri coverUri;
         private string description;
-        private float rate;
-        private int votes;
+        private double rate;
+        private long votes;
         private string genre;
         private int duration;
         private string countries;
@@ -134,7 +134,7 @@ namespace MovieOrganiser.Model
         ///<summary>
         /// Średnia ocen filmu
         ///</summary>
-        public float Rate
+        public double Rate
         {
             get
             {
@@ -147,7 +147,7 @@ namespace MovieOrganiser.Model
         ///<summary>
         /// Liczba głosów
         ///</summary>
-        public int Votes
+        public long Votes
         {
             get
             {

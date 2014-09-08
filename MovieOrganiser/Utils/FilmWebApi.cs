@@ -44,7 +44,7 @@ namespace MovieOrganiser.Utils
         /// <returns>Lista ID filmów</returns>
         public List<int> GetMovieIdList(String title)
         {
-            return (List<int>)this.ApiHelper.GetItemsList(title, "film", true);
+            return this.ApiHelper.GetItemsList(title, "film", true).Select(film => film.Id).ToList();
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MovieOrganiser.Utils
         /// <returns>Lista ID filmów</returns>
         public List<int> GetMovieIdList(string title, int year)
         {
-            return (List<int>)this.ApiHelper.GetItemsList(title, "film", true, year);
+            return this.ApiHelper.GetItemsList(title, "film", true, year).Select(film => film.Id).ToList();
         }
 
         /// <summary>

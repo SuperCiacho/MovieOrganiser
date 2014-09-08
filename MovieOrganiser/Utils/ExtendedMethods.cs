@@ -1,7 +1,9 @@
-﻿using MovieOrganiser.View;
+﻿using System.Linq;
+using MovieOrganiser.View;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
+using MovieOrganiser.ViewModel;
 
 namespace MovieOrganiser.Utils
 {
@@ -11,14 +13,12 @@ namespace MovieOrganiser.Utils
         {
             var listView = new List<ViewMovie>();
 
-            foreach (var item in list)
-            {
-                var viewModel = new ViewModel.ViewModelMovie(item);
+            var listViewModelMovie = list.Select(item => new ViewModel.ViewModelMovie(item));
 
-                ViewMovie view = null;
-                Application.Current.Dispatcher.Invoke(() => view = new ViewMovie { DataContext = viewModel }, DispatcherPriority.Render);
-                listView.Add(view);
-            }
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                listView = listViewModelMovie.Select(item => new ViewMovie {DataContext = item}).ToList();
+            }, DispatcherPriority.Background);
 
             return listView;
         }

@@ -1,4 +1,4 @@
-﻿using FolderPicker;
+﻿using System.Threading;
 using FolderPicker.View;
 using FolderPicker.ViewModel;
 using GalaSoft.MvvmLight.Command;
@@ -23,9 +23,9 @@ namespace MovieOrganiser.ViewModel
         private bool isDropZoneVisible;
         private string searchBoxText;
         private string yearTextInput;
+        private MovieType selectedType;
         private IList<ViewMovie> movieListView;
         private ViewMovieDetail selectedViewMovie;
-        private Task ongoingTask;
 
         private ICommand searchCommand;
         private ICommand movieSelectionCommand;
@@ -35,7 +35,8 @@ namespace MovieOrganiser.ViewModel
         private ICommand quitCommand;
         private ICommand openCommand;
         private ICommand setLibraryPathCommand;
-        private ICommand setContextCommand;
+        private ICommand setContextMenuCommand;
+        private string currentFileName;
 
         #endregion
 
@@ -49,7 +50,7 @@ namespace MovieOrganiser.ViewModel
             }
             set
             {
-                if (this.movieListView == value) return;
+                if (Equals(this.movieListView, value)) return;
                 this.movieListView = value;
                 RaisePropertyChanged("MovieListView");
             }
@@ -59,16 +60,27 @@ namespace MovieOrganiser.ViewModel
             get { return isDropZoneVisible; }
             set
             {
+                if (Equals(isDropZoneVisible, value)) return;
                 isDropZoneVisible = value;
                 RaisePropertyChanged("IsDropZoneVisible");
             }
         }
-        public MovieType SelectedType { get; set; }
+        public MovieType SelectedType
+        {
+            get { return selectedType; }
+            set
+            {
+                if (Equals(selectedType, value)) return;
+                selectedType = value;
+                RaisePropertyChanged("SelectedType");
+            }
+        }
         public string SearchBoxText
         {
             get { return searchBoxText; }
             set
             {
+                if (Equals(searchBoxText, value)) return;
                 searchBoxText = value;
                 RaisePropertyChanged("SearchBoxText");
             }
@@ -78,6 +90,7 @@ namespace MovieOrganiser.ViewModel
             get { return yearTextInput; }
             set
             {
+                if (Equals(yearTextInput, value)) return;
                 yearTextInput = value;
                 RaisePropertyChanged("YearTextInput");
             }
@@ -87,11 +100,24 @@ namespace MovieOrganiser.ViewModel
             get { return selectedViewMovie; }
             private set
             {
+                if (Equals(selectedViewMovie, value)) return;
                 selectedViewMovie = value;
                 RaisePropertyChanged("SelectedViewMovie");
             }
         }
-        public MovieInfo LastDroppedMovieFile { get; private set; }
+        public MovieInfo CurrentMovieFile { get; private set; }
+        public string CurrentFileName
+        {
+            get { return currentFileName; }
+            set
+            {
+                if (value != currentFileName)
+                {
+                    currentFileName = "Aktualnie otworzony plik:\n" + value;
+                    RaisePropertyChanged("CurrentFileName");
+                }
+            }
+        }
 
         #endregion
 
@@ -104,9 +130,6 @@ namespace MovieOrganiser.ViewModel
                 return searchCommand ?? (searchCommand = new RelayCommand<TextBox>(arg => DoSearch(arg.Text, YearTextInput)));
             }
         }
-
-        public ICommand OnWindowLoaded { get; set; }
-
         public ICommand DragEnterCommand
         {
             get
@@ -143,9 +166,16 @@ namespace MovieOrganiser.ViewModel
             {
                 return openCommand ?? (openCommand = new RelayCommand(() =>
                 {
-                    var ofd = new OpenFileDialog();
-                    ofd.ShowDialog();
-                    // TODO ustawić filtry i dodać całą logikę.
+                    var ofd = new OpenFileDialog()
+                    {
+                        Filter = "Pliki wideo|*.avi;*.mkv;*.rm;*.rmvb;*.mp4;*.mov;*.3gp;*.flv;*.mpeg;*.mpg|Wszystke pliki|*.*",
+                        CheckFileExists = true
+                    };
+
+                    if (ofd.ShowDialog() == true)
+                    {
+                        ProcessFileName(ofd.FileName);
+                    }
                 }));
             }
         }
@@ -153,22 +183,23 @@ namespace MovieOrganiser.ViewModel
         {
             get { return setLibraryPathCommand ?? (setLibraryPathCommand = new RelayCommand(() =>
             {
-                var path = new ViewModelFolderPicker().Show(new ViewFolderPicker());
-                if (string.IsNullOrEmpty(path) || path == Properties.Settings.Default.Location) return;
+                var movieLibraryLocation = Properties.Settings.Default.Location;
+                var path = new ViewModelFolderPicker(movieLibraryLocation).Show(new ViewFolderPicker());
+                if (string.IsNullOrEmpty(path) || path == movieLibraryLocation) return;
                 Properties.Settings.Default.Location = path;
                 Properties.Settings.Default.Save();
             }));
             }
         }
-        public ICommand SetContextCommand
+        public ICommand SetContextMenuCommand
         {
-            get { return setContextCommand ?? (setContextCommand = new RelayCommand(() => Application.Current.Shutdown())); }
+            get { return setContextMenuCommand ?? (setContextMenuCommand = new RelayCommand(Console.Beep)); }
         }
         public ICommand MovieSelectionCommand
         {
             get
             {
-                return movieSelectionCommand ?? (movieSelectionCommand = new RelayCommand<MouseButtonEventArgs>(ShowMovieDetails));
+                return movieSelectionCommand ?? (movieSelectionCommand = new RelayCommand<int>(ShowMovieDetails));
             }
         }
 
@@ -179,27 +210,18 @@ namespace MovieOrganiser.ViewModel
             MovieListView = new List<ViewMovie>();
             SelectedType = MovieType.Both;
 
-            for (var i = 0; i < 5; i++)
-            {
-                var view = new ViewMovie()
-                {
-                    DataContext = new ViewModelMovie()
-                    {
-                        Type = i % 3 == 0 ? "S" : "M"
-                    }
-                };
-                MovieListView.Add(view);
-            }
+            var args = Environment.GetCommandLineArgs();
 
-            SearchBoxText = "Mr Nobody";
+            if (args.Length > 1) ProcessFileName(args[1]);
         }
 
         private void DoSearch(string title, string year = null)
         {
             IsBusy = true;
-            ongoingTask = Task.Factory.StartNew<IEnumerable<Movie>>(() =>
+
+            Task.Factory.StartNew<IEnumerable<Movie>>(() =>
             {
-                bool value = year == null;
+                var value = string.IsNullOrEmpty(year);
 
                 switch (SelectedType.ToString())
                 {
@@ -220,10 +242,10 @@ namespace MovieOrganiser.ViewModel
                         return list;
                     default: return new List<Movie>();
                 }
-            })
-                .ContinueWith(task =>
+            }).ContinueWith(task =>
                 {
-                    MovieListView = task.Result.OrderBy(movie => movie.Title).ToMovieListView();
+                    var list = task.Result.OrderBy(movie => movie.Title).ToMovieListView();
+                    MovieListView = list;
                     IsBusy = false;
                 });
         }
@@ -234,28 +256,31 @@ namespace MovieOrganiser.ViewModel
             {
                 if (eventArg.Data.GetDataPresent(DataFormats.FileDrop))
                 {
-                    var file = ((string[])eventArg.Data.GetData(DataFormats.FileDrop))[0];
-                    LastDroppedMovieFile = CatalogTool.Instance.ParseFileName(file);
-                    SearchBoxText = LastDroppedMovieFile.Title;
-                    YearTextInput = LastDroppedMovieFile.Year.ToString();
-                    SelectedType = LastDroppedMovieFile.Type;
-                    RaisePropertyChanged();
+                    ProcessFileName(((string[])eventArg.Data.GetData(DataFormats.FileDrop))[0]);
                 }
             }
             IsDropZoneVisible = false;
         }
 
-        private void ShowMovieDetails(MouseButtonEventArgs eventArgs)
+        private void ProcessFileName(string file)
         {
-            var listbox = eventArgs.Source as ListBox;
-            var view = (UserControl)listbox.Items[listbox.SelectedIndex];
-            var movieDetail = new ViewMovieDetail();
-            var viewModel = new ViewModelMovieDetail((ViewModelMovie)view.DataContext, LastDroppedMovieFile)
+            this.CurrentMovieFile = CatalogTool.Instance.ParseFileName(file);
+            this.SearchBoxText = CurrentMovieFile.Title;
+            this.YearTextInput = CurrentMovieFile.Year.ToString();
+            this.SelectedType = CurrentMovieFile.Type;
+            this.CurrentFileName = System.IO.Path.GetFileName(CurrentMovieFile.FilePath);
+        }
+
+        private void ShowMovieDetails(int index)
+        {
+            var viewMovie = (UserControl)this.MovieListView[index];
+            var movieDetails = new ViewMovieDetail();
+            var viewModel = new ViewModelMovieDetail((ViewModelMovie)viewMovie.DataContext, CurrentMovieFile)
             {
-                ClearView = () => SelectedViewMovie = null,
+                ClearView = () => SelectedViewMovie = null
             };
-            movieDetail.DataContext = viewModel;
-            SelectedViewMovie = movieDetail;
+            movieDetails.DataContext = viewModel;
+            SelectedViewMovie = movieDetails;
         }
     }
 }
