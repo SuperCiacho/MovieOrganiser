@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmWeb Movie Checker", "FilmWeb Movie Checker\FilmWeb Movie Checker.csproj", "{A4D3F4E8-7526-45EB-ADD1-ECD742A6AF48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieOrganiser", "MovieOrganiser\MovieOrganiser.csproj", "{F41847FD-8011-4EF9-A09B-475FEA643A9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderPicker", "FolderPicker\FolderPicker.csproj", "{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "FolderPicker\Controls.csproj", "{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,5 +52,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using FolderPicker.View;
-using FolderPicker.ViewModel;
-using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using MovieOrganiser.Model;
 using MovieOrganiser.Utils;
@@ -13,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using YorgiControls.ViewModels;
 
 namespace MovieOrganiser.ViewModel
 {
@@ -184,7 +182,7 @@ namespace MovieOrganiser.ViewModel
             get { return setLibraryPathCommand ?? (setLibraryPathCommand = new RelayCommand(() =>
             {
                 var movieLibraryLocation = Properties.Settings.Default.Location;
-                var path = new ViewModelFolderPicker(movieLibraryLocation).Show(new ViewFolderPicker());
+                var path = new ViewModelFolderPicker(movieLibraryLocation).Show(new YorgiControls.Views.FolderPicker());
                 if (string.IsNullOrEmpty(path) || path == movieLibraryLocation) return;
                 Properties.Settings.Default.Location = path;
                 Properties.Settings.Default.Save();

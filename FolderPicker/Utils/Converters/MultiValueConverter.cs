@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
-using FolderPicker.Model;
+using YorgiControls.Model;
 
-namespace FolderPicker.Utils.Converters
+namespace YorgiControls.Utils.Converters
 {
     public class MultiValueConverter : IMultiValueConverter
     {
@@ -15,7 +15,7 @@ namespace FolderPicker.Utils.Converters
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return value as object[];
         }
     }
 }

@@ -40,12 +40,12 @@ namespace FilmWeb_Movie_Checker
             Browser.Visible = show;
             FWlogo.Visible = !show;
         }
-        private void ChoosingName(string adres)
+        private void ChoosingName(string path)
         {
-            FilePath = new DirectoryInfo(adres);
-            ChooseName Filter = new ChooseName(NameFilter(FilePath.Parent.ToString().ToLower()), NameFilter(Path.GetFileNameWithoutExtension(adres).ToLower()));
-            var result = Filter.ShowDialog();
-            if (result == DialogResult.Yes) InputBox.Text = Filter.name;
+            FilePath = new DirectoryInfo(path);
+            ChooseName filterDialog = new ChooseName(NameFilter(FilePath.Parent.ToString().ToLower()), NameFilter(Path.GetFileNameWithoutExtension(path).ToLower()));
+            var result = filterDialog.ShowDialog();
+            if (result == DialogResult.Yes) InputBox.Text = filterDialog.name;
             else return;
 
             Search();
@@ -73,71 +73,57 @@ namespace FilmWeb_Movie_Checker
         {
             if (name == string.Empty) return name;
 
-            int tmpInt = 0;
-            string tmpString = null;
+            Match match = Regex.Match(name, @"\d{3,4}p{1}");
+            if (match.Success) HD = match.Value;
 
-            //if (Regex.IsMatch(name, @"\d{3}p{1}|\d{4}p{1}"))
-            if (Regex.IsMatch(name, @"\d{3,4}p{1}"))
-                HD = Regex.Match(name, @"\d{3,4}p{1}").Value;
-
-            if (Regex.IsMatch(name, @"\d{4}"))
+            match = Regex.Match(name, @"\d{4}");
+            if (match.Success)
             {
-                tmpString = Regex.Match(name, @"\d{4}").Value;
-                if (int.Parse(tmpString) > 1900)
+                if (int.Parse(match.Value) > 1900)
                 {
-                    name = name.Remove(name.IndexOf(tmpString) - 1);
-                    Year = tmpString;
+                    name = name.Remove(match.Index - 1);
+                    Year = match.Value;
                 }
             }
 
-            StringBuilder sb = new StringBuilder(name);
+            var sb = new StringBuilder(name);
 
-            if (Regex.IsMatch(name, @"^.{0,5}-{1}|-{1}.*$"))
-                sb.Replace(Regex.Match(name, @"^.{0,5}-{1}|-{1}.*$").Value, "");
+            match = Regex.Match(name, @"^.{0,5}-{1}|-{1}.*$");
+            if (match.Success) sb.Replace(match.Value, string.Empty);
 
-            if (Regex.IsMatch(name, @"\{{1}.*\}{1}"))
-                sb.Replace(Regex.Match(name, @"\{{1}.*\}{1}").Value, "");
+            match = Regex.Match(name, @"\{{1}.*\}{1}");
+            if (match.Success) sb.Replace(match.Value, string.Empty);
 
             Keywords.ForEach(x => sb.Replace(x, " "));
             sb.Replace('.', ' ').Replace('_', ' ');
 
-            if (HD != null)
-                sb.Replace(HD, string.Empty);
+            if (HD != null) sb.Replace(HD, string.Empty);
 
-            if (Regex.IsMatch(name, "\\d{1}x\\d{2}"))
-                sb.Replace(Regex.Match(name, "\\d{1}x\\d{2}").Value, "s0");
+            match = Regex.Match(name, "\\d{1,2}x\\d{1,3}");
+            if (match.Success)
+            {
+                var first = match.Value.Substring(0, 2).Contains("x");
+                var matchValue = string.Format("s{0}{1}", first ? "0" : string.Empty, match.Value.Replace('x', 'e'));
+                sb.Replace(match.Value, matchValue);
+            }
 
             name = sb.ToString();
 
-            if (name.Contains("s0"))
+            match = Regex.Match(name, "s\\d{1,2}e\\d{1,3}");
+            if (match.Success)
             {
-                tmpInt = name.IndexOf("s0");
-                name = name.Remove(tmpInt);
-                FW_Adres = FW_Serial;
-            }
-            else if (name.Contains("s1"))
-            {
-                tmpInt = name.IndexOf("s1");
-                name = name.Remove(tmpInt);
+                name = name.Remove(match.Index);
                 FW_Adres = FW_Serial;
             }
             else FW_Adres = FW_Film;
 
-            if (Regex.IsMatch(name, "cd\\d{1}"))
-            {
-                name = Regex.Replace(name, "cd\\d{1}", "");
-            }
+            match = Regex.Match(name, "cd\\d{1}");
+            if (match.Success) name = name.Replace(match.Value, string.Empty);
 
-            if (Regex.IsMatch(name, " pl$| en$"))
-            {
-                name = name.Remove(name.Length - 3, 3);
-            }
+            match = Regex.Match(name, " pl$| en$");
+            if (match.Success) name = name.Remove(match.Index);
 
-            name = name.TrimStart(' ');
-            name = name.TrimEnd(' ');
-
-            tmpString = null;
-            tmpInt = 0;
+            name = name.Trim();
 
             return name;
         }
@@ -241,7 +227,7 @@ namespace FilmWeb_Movie_Checker
                     foreach (var elem in filesInDir) fileList.AppendLine("\t" + elem.Name);
                 }
 
-                 var result = MessageBox.Show("Folder nie jest pusty. Znajdują się tam poniższe pliki i foldery:\n" + fileList.ToString()
+                 var result = MessageBox.Show("Folder nie jest pusty. Znajdują się tam poniższe pliki i foldery:\n" + fileList
                     + "\nCzy wciąż chcesz go usunąć?", "Folder nie jest pusty.", MessageBoxButtons.YesNo);
 
                 deleteFlag = result == DialogResult.Yes;
@@ -272,23 +258,23 @@ namespace FilmWeb_Movie_Checker
                     }
             }
         }
+
         #region Drag&Drop
         private void MAIN_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-                e.Effect = DragDropEffects.Link;
-            else
-                e.Effect = DragDropEffects.None;
+            e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Link : DragDropEffects.None;
         }
+
         private void MAIN_DragDrop(object sender, DragEventArgs e)
         {
-            string[] FilePath = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            ChoosingName(FilePath[0]);
+            var filePath = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            ChoosingName(filePath[0]);
         }
         #endregion
+
         #endregion
 
-        public MainWindow(string adres)
+        public MainWindow()
         {
             InitializeComponent();
             #region Inicjalizacja Menu Kontekstowego
@@ -297,16 +283,17 @@ namespace FilmWeb_Movie_Checker
             usuńToolStripMenuItem.Enabled = isContextMenuAdded;
             #endregion
 
+            var args = Environment.GetCommandLineArgs();
+
             znajdźNaStronieToolStripMenuItem.Visible = false;
 
-            InvalidChars = new System.Collections.Generic.List<char>();
-            InvalidChars.AddRange(Path.GetInvalidPathChars());
+            InvalidChars = new List<char>(Path.GetInvalidPathChars());
             InvalidChars.AddRange(Path.GetInvalidFileNameChars());
 
             FW_Adres = FW_GeneralSearch;
 
-            if (adres == string.Empty) Browser.Visible = false;
-            else ChoosingName(adres);
+            if (args.Length < 2) Browser.Visible = false;
+            else ChoosingName(args[1]);
         }
 
         #region Obsługa Przeglądarki

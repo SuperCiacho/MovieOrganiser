@@ -1,11 +1,11 @@
-﻿namespace FolderPicker.View
+﻿namespace YorgiControls.Views
 {
     /// <summary>
     ///     Interaction logic for FolderPicker.xaml
     /// </summary>
-    public partial class ViewFolderPicker
+    public partial class FolderPicker
     {
-        public ViewFolderPicker()
+        public FolderPicker()
         {
             InitializeComponent();
         }

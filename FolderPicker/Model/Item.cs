@@ -1,21 +1,27 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using GalaSoft.MvvmLight;
-
-namespace FolderPicker.Model
+﻿namespace YorgiControls.Model
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using GalaSoft.MvvmLight;
+
     public abstract class Item : ObservableObject
     {
+        #region Fields
+
         private bool isSelected;
         private bool isExpanded;
         private string displayIcon;
+
+        #endregion
+
+        #region Properties
 
         public string Name { get; set; }
 
         public string Path { get; set; }
 
-        public ObservableCollection<object> Children { get; protected set; }
+        public ObservableCollection<Item> Children { get; protected set; }
 
         public string DisplayIcon
         {
@@ -46,10 +52,15 @@ namespace FolderPicker.Model
                 if (value == isExpanded) return;
                 isExpanded = value;
                 GetDirectories(this);
+                ChangeIcon(value);
 
                 this.RaisePropertyChanged("IsExpanded");
             }
         }
+
+        #endregion
+
+        #region Methods
 
         private void GetDirectories(Item item)
         {
@@ -81,5 +92,9 @@ namespace FolderPicker.Model
                 Console.WriteLine(e.Message);
             }
         }
+
+        protected virtual void ChangeIcon(bool isItemExpanded) { }
+
+        #endregion
     }
 }

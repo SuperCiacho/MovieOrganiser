@@ -7,8 +7,8 @@
     <ProjectGuid>{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FolderPicker</RootNamespace>
-    <AssemblyName>FolderPicker</AssemblyName>
+    <RootNamespace>YorgiControls</RootNamespace>
+    <AssemblyName>YorgiControls</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -66,13 +66,13 @@
   <ItemGroup>
     <Compile Include="Model\Item.cs" />
     <Compile Include="Utils\Converters\MultiValueConverter.cs" />
-    <Compile Include="ViewModel\ViewModelFolderPicker.cs" />
-    <Page Include="View\ViewFolderPicker.xaml">
+    <Compile Include="ViewModels\ViewModelFolderPicker.cs" />
+    <Page Include="Views\FolderPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Compile Include="View\ViewFolderPicker.xaml.cs">
-      <DependentUpon>ViewFolderPicker.xaml</DependentUpon>
+    <Compile Include="Views\FolderPicker.xaml.cs">
+      <DependentUpon>FolderPicker.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +102,11 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Pics\drive.png" />
+    <Resource Include="Pics\drive_ready.png" />
+    <Resource Include="Pics\drive_unready.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Pics\folder_close.png" />
     <Resource Include="Pics\folder_open.png" />
   </ItemGroup>

@@ -13,11 +13,11 @@ namespace FilmWeb_Movie_Checker
         /// </summary>
         [STAThread]
 
-        static void Main(string[] args)
+        static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow(args.Length == 0 ? string.Empty : args[0]));
+            Application.Run(new MainWindow());
 
         }
     }

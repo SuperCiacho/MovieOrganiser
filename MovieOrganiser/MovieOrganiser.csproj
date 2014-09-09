@@ -162,9 +162,9 @@
     <Resource Include="Assets\dropzone.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FolderPicker\FolderPicker.csproj">
-      <Project>{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}</Project>
-      <Name>FolderPicker</Name>
+    <ProjectReference Include="..\FolderPicker\Controls.csproj">
+      <Project>{9e3537bf-559d-48b7-9fad-77a1b89eeaab}</Project>
+      <Name>Controls</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
