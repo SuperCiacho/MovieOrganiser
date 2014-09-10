@@ -65,15 +65,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Item.cs" />
+    <Compile Include="Utils\Converters\ItemSizeConverter.cs" />
     <Compile Include="Utils\Converters\MultiValueConverter.cs" />
     <Compile Include="ViewModels\ViewModelFolderPicker.cs" />
+    <Compile Include="Views\YearPicker.xaml.cs">
+      <DependentUpon>YearPicker.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\FolderPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Compile Include="ViewModels\ViewModelYearPicker.cs" />
     <Compile Include="Views\FolderPicker.xaml.cs">
       <DependentUpon>FolderPicker.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\YearPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Directory.cs" />
