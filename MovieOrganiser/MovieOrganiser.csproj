@@ -162,7 +162,7 @@
     <Resource Include="Assets\dropzone.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FolderPicker\Controls.csproj">
+    <ProjectReference Include="..\Controls\Controls.csproj">
       <Project>{9e3537bf-559d-48b7-9fad-77a1b89eeaab}</Project>
       <Name>Controls</Name>
     </ProjectReference>

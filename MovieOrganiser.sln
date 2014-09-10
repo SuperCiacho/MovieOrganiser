@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmWeb Movie Checker", "Fi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieOrganiser", "MovieOrganiser\MovieOrganiser.csproj", "{F41847FD-8011-4EF9-A09B-475FEA643A9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "FolderPicker\Controls.csproj", "{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
