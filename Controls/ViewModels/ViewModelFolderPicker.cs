@@ -94,7 +94,9 @@ namespace YorgiControls.ViewModels
             for (var i = 1; i < sp.Length; i++)
             {
                 item.IsExpanded = true;
-                item = item.Children.First(x => x.Name == sp[i]);
+                var childItem = item.Children.FirstOrDefault(x => x.Name == sp[i]);
+                if(childItem == null) break;
+                item = childItem;
             }
             item.IsSelected = true;
         }
