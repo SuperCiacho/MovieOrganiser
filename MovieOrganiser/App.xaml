@@ -1,9 +1,4 @@
-<Application x:Class="MovieOrganiser.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converters="clr-namespace:MovieOrganiser.Converters" 
-             StartupUri="View/ViewMainWindow.xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             ShutdownMode="OnMainWindowClose">
+<Application x:Class="MovieOrganiser.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converters="clr-namespace:MovieOrganiser.Converters" StartupUri="View/MainWindow.xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -15,12 +10,22 @@
                 <Setter Property="TextWrapping" Value="NoWrap" />
                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             </Style>
+            <Style TargetType="{x:Type xctk:MessageBox}">
+                <Setter Property="OkButtonContent" Value="OK" />
+                <Setter Property="CancelButtonContent" Value="Anuluj" />
+                <Setter Property="YesButtonContent" Value="Tak" />
+                <Setter Property="NoButtonContent" Value="Nie" />
+            </Style>
             <converters:ValueToVisibilityConverter x:Key="ValueToVisibilityConverter" />
             <converters:WidthToColumnNumberConverter x:Key="WidthToColumnNumber" />
-            <converters:BooleanValueConverter x:Key="BooleanValueConverter" />
+            <converters:InvertBoolConverter x:Key="BoolInverter" />
             <converters:MovieTypeToIndex x:Key="MovieTypeToIndex" />
             <converters:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
             <converters:TranslationTechinqueConverter x:Key="TranslationTechinqueConverter" />
+            <converters:DropArgumentsConverter x:Key="DropArgumentsConverter" />
+
+
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:MovieOrganiser.ViewModel" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

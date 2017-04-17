@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="YorgiControls.YearPicker" x:Name="yearPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:view="clr-namespace:YorgiControls"
+             xmlns:converters="clr-namespace:YorgiControls.Utils.Converters"
+             xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:custom="clr-namespace:YorgiControls.Utils"
+             HorizontalAlignment="Stretch"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:BooleanConverter x:Key="BooleanConverter" />
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <toolkit:WatermarkTextBox x:Name="YearField" Grid.Column="0" Grid.Row="0" 
+                                  Text="{Binding Path=Text, ElementName=yearPicker}"
+                                  TextAlignment="Right" MaxLength="4"
+                                  Watermark="{StaticResource YearWaterMark}" 
+                                  custom:TextBoxTools.NumericOnly="True"
+                                  />
+        <ToggleButton x:Name="OpenButton" Grid.Column="1" Grid.Row="0" Content="C" Height="20"
+                       IsEnabled="{Binding ElementName=CalendarPopup, Path=IsOpen, 
+                        Converter={StaticResource BooleanConverter}, ConverterParameter=Invert}"/>
+        <Popup x:Name="CalendarPopup" StaysOpen="False" IsOpen="{Binding IsChecked, ElementName=OpenButton}"
+               AllowsTransparency="True" PopupAnimation="Slide"
+               Placement="Bottom" PlacementTarget="{Binding ElementName=YearField}">
+            <view:YearCalendar SelectedYear="{Binding Path=SelectedYear, ElementName=yearPicker}"
+                               Text="{Binding Path=Text, ElementName=yearPicker}"
+                               ItemSelected="ItemSelectedChanged"/>
+        </Popup>
+    </Grid>
+</UserControl>

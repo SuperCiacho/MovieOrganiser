@@ -1,9 +1,9 @@
 ﻿namespace YorgiControls.Model
 {
-    public class Directory : Item
+    internal class Directory : Item
     {
-        private const string CloseFolderIcon = "/YorgiControls;component/Pics/folder_close.png";
-        private const string OpenFolderIcon = "/YorgiControls;component/Pics/folder_open.png";
+        private const string CloseFolderIcon = "Images/folder_close.png";
+        private const string OpenFolderIcon = "Images/folder_open.png";
 
         public Directory(string fullPath) : this(fullPath, System.IO.Path.GetFileName(fullPath)) { }
 

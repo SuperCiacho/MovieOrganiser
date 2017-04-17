@@ -18,7 +18,10 @@
     <system:String x:Key="Description">Opis</system:String>
     <system:String x:Key="TitleWaterMark">Tytuł</system:String>
     <system:String x:Key="YearWaterMark">Rok produkcji</system:String>
-    
+    <system:String x:Key="DropHere">Upuść tutaj</system:String>
+    <system:String x:Key="DropNotAllowed">Nieobsługiwany typ pliku.</system:String>
+
+
     <x:ArrayExtension Type="system:String" x:Key="Translations">
         <system:String>Napisy</system:String>
         <system:String>Lektor</system:String>

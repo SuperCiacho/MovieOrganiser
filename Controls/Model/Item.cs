@@ -1,11 +1,10 @@
 ﻿namespace YorgiControls.Model
 {
     using System;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using GalaSoft.MvvmLight;
 
-    public abstract class Item : ObservableObject
+    internal abstract class Item : ObservableObject
     {
         #region Fields
 
@@ -21,7 +20,7 @@
 
         public string Path { get; set; }
 
-        public ObservableCollection<Item> Children { get; protected set; }
+        public System.Collections.ObjectModel.ObservableCollection<Item>Children { get; protected set; }
 
         public string DisplayIcon
         {
@@ -53,7 +52,6 @@
                 isExpanded = value;
                 GetDirectories(this);
                 ChangeIcon(value);
-
                 this.RaisePropertyChanged("IsExpanded");
             }
         }

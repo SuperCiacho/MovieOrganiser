@@ -15,6 +15,8 @@
     <system:String x:Key="SetContextMenu">Set Context Menu</system:String>
     <system:String x:Key="TranslationTechnique">Translation technique</system:String>
     <system:String x:Key="Description">Description</system:String>
+    <system:String x:Key="DropHere">Drop here</system:String>
+
 
     <x:ArrayExtension Type="system:String" x:Key="Translations">
         <system:String>Subtitles</system:String>

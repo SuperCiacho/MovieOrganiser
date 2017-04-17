@@ -5,5 +5,20 @@
     <Setting Name="Location" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Movies\</Value>
     </Setting>
+    <Setting Name="VideoExtensions" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;.mp4&lt;/string&gt;
+  &lt;string&gt;.mkv&lt;/string&gt;
+  &lt;string&gt;.avi&lt;/string&gt;
+  &lt;string&gt;.rm&lt;/string&gt;
+  &lt;string&gt;.rmvb&lt;/string&gt;
+  &lt;string&gt;.mov&lt;/string&gt;
+  &lt;string&gt;.3gp&lt;/string&gt;
+  &lt;string&gt;.flv&lt;/string&gt;
+  &lt;string&gt;.mpeg&lt;/string&gt;
+  &lt;string&gt;.mpg&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

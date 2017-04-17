@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmWeb Movie Checker", "FilmWeb Movie Checker\FilmWeb Movie Checker.csproj", "{A4D3F4E8-7526-45EB-ADD1-ECD742A6AF48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieOrganiser", "MovieOrganiser\MovieOrganiser.csproj", "{F41847FD-8011-4EF9-A09B-475FEA643A9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmWebApi", "FilmWebApi\FilmWebApi.csproj", "{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmWebApi.Tests", "FilmWebApi.Tests\FilmWebApi.Tests.csproj", "{5C1FAC2E-CBD6-455F-A759-42186EC890D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieOrganiser.Tests", "MovieOrganiser.Tests\MovieOrganiser.Tests.csproj", "{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +55,40 @@ Global
 		{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9E3537BF-559D-48B7-9FAD-77A1B89EEAAB}.Release|x86.ActiveCfg = Release|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0D9520DF-A4DB-4843-9D16-7077E9FEA05C}.Release|x86.ActiveCfg = Release|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Debug|x86.Build.0 = Debug|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Release|x86.ActiveCfg = Release|Any CPU
+		{5C1FAC2E-CBD6-455F-A759-42186EC890D2}.Release|x86.Build.0 = Release|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Debug|x86.Build.0 = Debug|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Release|x86.ActiveCfg = Release|Any CPU
+		{64A961D1-8ACE-4FC1-8F5B-2FAAF790DDA1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
